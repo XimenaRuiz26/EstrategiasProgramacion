@@ -1,0 +1,51 @@
+def dispensar_dinero(monto):
+    denominaciones = [100000, 50000, 20000, 10000]
+    disponibilidad = {
+        100000: 50,
+        50000: 100,
+        20000: 200,
+        10000: 300
+    }
+
+    resultado = {100000: 0, 50000: 0, 20000: 0, 10000: 0}
+
+    for billete in denominaciones:
+        max_billetes = min(monto // billete, disponibilidad[billete])
+        resultado[billete] = max_billetes
+        monto -= max_billetes * billete
+
+    if monto == 0:
+        return resultado
+    else:
+        return None
+
+
+def mostrar_resultado(resultado):
+    print("\nCambio entregado con los siguientes billetes:")
+    for billete in sorted(resultado.keys(), reverse=True):
+        print(f"${billete}: {resultado[billete]} billetes")
+
+
+def main():
+    print("=== Cajero Automático ===")
+    try:
+        monto_solicitado = int(input("Ingrese el monto a retirar (debe ser múltiplo de 10000): "))
+        
+        if monto_solicitado % 10000 != 0:
+            print("❌ El monto debe ser múltiplo de 10000.")
+            return
+
+        resultado = dispensar_dinero(monto_solicitado)
+
+        if resultado:
+            mostrar_resultado(resultado)
+        else:
+            print("❌ No hay suficientes billetes para entregar la cantidad solicitada.")
+
+    except ValueError:
+        print("❌ Entrada inválida. Debe ingresar un número entero.")
+
+
+# Ejecuta el programa
+if __name__ == "__main__":
+    main()

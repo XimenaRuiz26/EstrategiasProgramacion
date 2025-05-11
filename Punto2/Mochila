@@ -1,0 +1,63 @@
+from typing import List, Tuple
+
+class Item:
+    def __init__(self, cantidad: int, peso: float, valor: float, indice: int):
+        self.cantidad = cantidad
+        self.peso = peso
+        self.valor = valor
+        self.indice = indice
+
+    def unidades_disponibles(self):
+        return self.cantidad
+
+    def valor_unitario(self):
+        return self.valor / self.peso
+
+    def __repr__(self):
+        return f"Item {self.indice}: {self.cantidad} x ({self.peso}t, ${self.valor})"
+
+def mochila_fraccionaria(items: List[Item], capacidad: float, criterio: str):
+    if criterio == "valor_unitario":
+        items.sort(key=lambda x: x.valor_unitario(), reverse=True)
+    elif criterio == "valor":
+        items.sort(key=lambda x: x.valor, reverse=True)
+    elif criterio == "peso":
+        items.sort(key=lambda x: x.peso)
+
+    peso_total = 0
+    valor_total = 0
+    seleccionados = []
+
+    for item in items:
+        for _ in range(item.cantidad):
+            if peso_total + item.peso <= capacidad:
+                peso_total += item.peso
+                valor_total += item.valor
+                seleccionados.append((item.indice, 1))
+            else:
+                fraccion = (capacidad - peso_total) / item.peso
+                if fraccion > 0:
+                    peso_total += item.peso * fraccion
+                    valor_total += item.valor * fraccion
+                    seleccionados.append((item.indice, fraccion))
+                return seleccionados, valor_total
+    return seleccionados, valor_total
+
+def main():
+    items = [
+        Item(3, 210, 15, 1),
+        Item(2, 230, 50, 2),
+        Item(4, 150, 20, 3),
+        Item(5, 40, 55, 4),
+        Item(3, 80, 92, 5)
+    ]
+    capacidad = 520
+
+    for criterio in ["valor_unitario", "valor", "peso"]:
+        print(f"\n--- Estrategia: {criterio} ---")
+        seleccionados, valor = mochila_fraccionaria(items.copy(), capacidad, criterio)
+        print("Objetos seleccionados (índice, cantidad/fracción):", seleccionados)
+        print("Valor total de la carga:", round(valor, 2))
+
+if __name__ == "__main__":
+    main()
